@@ -51,8 +51,9 @@ jobs:
             # Build the app
             yarn build
 
-            # Start the app using PM2
-            pm2 start ecosystem.config.js
+            # Check if the app is already running with pm2 and restart it if it is
+            pm2 list | grep -q 'react-app' && pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
+
             pm2 save
             pm2 startup
           EOF
