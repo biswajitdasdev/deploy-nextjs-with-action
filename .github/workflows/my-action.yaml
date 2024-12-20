@@ -25,19 +25,18 @@ jobs:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
         run: |
-          # SSH into EC2 and prepare environment
+
+          # SSH into EC2 and clone repo, install dependencies, and build
           ssh $EC2_USER@$EC2_HOST << EOF
-            # Check if ~/app directory exists and delete it
+
+              # Check if ~/app directory exists and delete it
             if [ -d "$HOME/app" ]; then
               rm -rf "$HOME/app"
               echo "Directory ~/app exists and has been deleted."
             else
               echo "Directory ~/app does not exist."
             fi
-          EOF
 
-          # SSH into EC2 and clone repo, install dependencies, and build
-          ssh $EC2_USER@$EC2_HOST << EOF
             # Clone the repo
             git clone https://github.com/biswajitdasdev/react-app.git ~/app
 
