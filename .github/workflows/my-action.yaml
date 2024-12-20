@@ -30,18 +30,18 @@ jobs:
           ssh $EC2_USER@$EC2_HOST << EOF
 
               # Check if ~/app directory exists and delete it test
-              if [ -d "$HOME/app" ]; then
-                cd $HOME/app
+              if [ -d "/home/ubuntu/app" ]; then
+                cd ~/app
                 git pull origin main
               else
-                git clone https://github.com/biswajitdasdev/react-app.git $HOME/app
+                git clone https://github.com/biswajitdasdev/react-app.git ~/app
               fi
 
 
 
 
             # Navigate to the app directory and install dependencies
-            cd $HOME/app
+            cd ~/app
 
             # Ensure nvm, yarn, and pm2 are available in the PATH
             export PATH=$PATH:/home/$EC2_USER/.nvm/versions/node/v22.12.0/bin
