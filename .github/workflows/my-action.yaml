@@ -51,7 +51,11 @@ jobs:
 
           cd ~/app
 
-          yarn install
+          export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v22.12.0/bin/yarn
+          export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v22.12.0/bin/pm2
+
+
+          yarn install --frozen-lockfile
 
           yarn build
 
