@@ -1,0 +1,70 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 'Install Node.js'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+
+      - name: 'Install dependencies'
+        run: yarn install --frozen-lockfile
+
+      - name: 'Build Code'
+        run: yarn build
+
+      - name: 'Upload artifacts'
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: dist/
+
+  deploy:
+    runs-on: ubuntu-22.04
+    needs: build
+
+    steps:
+      - name: 'Download build artifacts'
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan "$EC2_HOST" >> ~/.ssh/known_hosts
+
+      - name: Deploy to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+        run: |
+          # Copy the dist folder to EC2
+          scp -r dist/ $EC2_USER@$EC2_HOST:~/app
+
+          # SSH into EC2 and prepare environment
+          ssh $EC2_USER@$EC2_HOST << EOF
+          # Navigate to the app directory
+          cd ~/app
+
+          # Start or restart the app using PM2
+          pm2 start dist/server.js --name my-app || pm2 restart my-app
+
+          # Save the PM2 process list
+          pm2 save
+          EOF
