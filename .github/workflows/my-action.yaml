@@ -36,7 +36,7 @@ jobs:
           fi
           EOF
           # SSH into EC2 and prepare environment
-          ssh $EC2_USER@$EC2_HOST ""
+          ssh $EC2_USER@$EC2_HOST "git clone https://github.com/biswajitdasdev/react-app.git ~/app"
           ssh $EC2_USER@$EC2_HOST "cd ~/app && export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v22.12.0/bin/yarn && yarn install --frozen-lockfile && yarn build"
           ssh $EC2_USER@$EC2_HOST "cd ~/app && export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v22.12.0/bin/pm2 && pm2 start ecosystem.config.js &&  pm2 save &&
           pm2 startup"
