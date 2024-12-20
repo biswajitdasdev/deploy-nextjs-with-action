@@ -26,6 +26,15 @@ jobs:
           EC2_USER: ${{ secrets.EC2_USER }}
         run: |
 
+          ssh $EC2_USER@$EC2_HOST << EOF
+          # Check if ~/app directory exists and delete it
+          if [ -d "$HOME/app" ]; then
+            rm -rf "$HOME/app"
+            echo "Directory ~/app exists and has been deleted."
+          else
+            echo "Directory ~/app does not exist."
+          fi
+
           # SSH into EC2 and prepare environment
           ssh $EC2_USER@$EC2_HOST "git clone https://github.com/biswajitdasdev/react-app.git ~/app"
           ssh $EC2_USER@$EC2_HOST "cd ~/app && export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v22.12.0/bin/yarn && yarn install --frozen-lockfile && yarn build"
