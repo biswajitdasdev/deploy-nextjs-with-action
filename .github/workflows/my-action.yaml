@@ -34,7 +34,7 @@ jobs:
                 cd ~/app
                 git pull origin main
               else
-                git clone https://github.com/biswajitdasdev/react-app.git ~/app
+                git clone https://github.com/biswajitdasdev/deploy-nextjs-with-action.git ~/app
               fi
 
 
