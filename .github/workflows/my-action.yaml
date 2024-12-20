@@ -30,8 +30,8 @@ jobs:
           ssh $EC2_USER@$EC2_HOST << EOF
 
               # Check if ~/app directory exists and delete it
-            if [ -d "$HOME/app" ]; then
-              rm -rf "$HOME/app"
+            if [ -d "~/app" ]; then
+              rm -rf "~/app"
               echo "Directory ~/app exists and has been deleted."
             else
               echo "Directory ~/app does not exist."
