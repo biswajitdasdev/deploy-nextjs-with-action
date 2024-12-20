@@ -29,7 +29,7 @@ jobs:
           # SSH into EC2 and clone repo, install dependencies, and build
           ssh $EC2_USER@$EC2_HOST << EOF
 
-              # Check if ~/app directory exists and delete it
+              # Check if ~/app directory exists and delete it test
               if [ -d "$HOME/app" ]; then
                 rm -rf "$HOME/app"
                 echo "Directory ~/app exists and has been deleted."
