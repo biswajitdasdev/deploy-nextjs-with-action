@@ -56,4 +56,5 @@ jobs:
 
             pm2 save
             pm2 startup
+            exit 0
           EOF
