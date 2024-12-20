@@ -6,26 +6,8 @@ on:
       - main
 
 jobs:
-  build:
-    runs-on: ubuntu-22.04
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: 'Install Node.js'
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.12.0
-
-      - name: 'Install dependencies'
-        run: yarn install --frozen-lockfile
-
-      - name: 'Build Code'
-        run: yarn build
-
   deploy:
     runs-on: ubuntu-22.04
-    needs: build
 
     steps:
       - name: Configure SSH
@@ -45,26 +27,7 @@ jobs:
         run: |
 
           # SSH into EC2 and prepare environment
-          ssh $EC2_USER@$EC2_HOST << EOF
-          # Navigate to the app directory
-          git clone https://github.com/biswajitdasdev/react-app.git ~/app
-
-          cd ~/app
-
-          export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v22.12.0/bin/yarn
-          export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v22.12.0/bin/pm2
-
-
-          yarn install --frozen-lockfile
-
-          yarn build
-
-          # Start or restart the app using PM2
-          pm2 start ecosystem.config.js
-
-
-          # Save the PM2 process list
-          pm2 save
-          pm2 startup
-
-          EOF
+          ssh $EC2_USER@$EC2_HOST "git clone https://github.com/biswajitdasdev/react-app.git ~/app"
+          ssh $EC2_USER@$EC2_HOST "cd ~/app && export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v22.12.0/bin/yarn && yarn install --frozen-lockfile && yarn build"
+          ssh $EC2_USER@$EC2_HOST "cd ~/app && export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v22.12.0/bin/pm2 && pm2 start ecosystem.config.js &&  pm2 save &&
+          pm2 startup"
