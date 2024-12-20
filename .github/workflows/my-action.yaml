@@ -25,18 +25,34 @@ jobs:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
         run: |
-
-          ssh $EC2_USER@$EC2_HOST << EOF
-          # Check if ~/app directory exists and delete it
-          if [ -d "$HOME/app" ]; then
-            rm -rf "$HOME/app"
-            echo "Directory ~/app exists and has been deleted."
-          else
-            echo "Directory ~/app does not exist."
-          fi
-          EOF
           # SSH into EC2 and prepare environment
-          ssh $EC2_USER@$EC2_HOST "git clone https://github.com/biswajitdasdev/react-app.git ~/app"
-          ssh $EC2_USER@$EC2_HOST "cd ~/app && export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v22.12.0/bin/yarn && yarn install --frozen-lockfile && yarn build"
-          ssh $EC2_USER@$EC2_HOST "cd ~/app && export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v22.12.0/bin/pm2 && pm2 start ecosystem.config.js &&  pm2 save &&
-          pm2 startup"
+          ssh $EC2_USER@$EC2_HOST << EOF
+            # Check if ~/app directory exists and delete it
+            if [ -d "$HOME/app" ]; then
+              rm -rf "$HOME/app"
+              echo "Directory ~/app exists and has been deleted."
+            else
+              echo "Directory ~/app does not exist."
+            fi
+          EOF
+
+          # SSH into EC2 and clone repo, install dependencies, and build
+          ssh $EC2_USER@$EC2_HOST << EOF
+            # Clone the repo
+            git clone https://github.com/biswajitdasdev/react-app.git ~/app
+
+            # Navigate to the app directory and install dependencies
+            cd ~/app
+
+            # Ensure nvm, yarn, and pm2 are available in the PATH
+            export PATH=$PATH:/home/$EC2_USER/.nvm/versions/node/v22.12.0/bin
+            yarn install --frozen-lockfile
+
+            # Build the app
+            yarn build
+
+            # Start the app using PM2
+            pm2 start ecosystem.config.js
+            pm2 save
+            pm2 startup
+          EOF
