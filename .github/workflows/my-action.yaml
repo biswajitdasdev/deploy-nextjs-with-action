@@ -49,6 +49,8 @@ jobs:
           # Navigate to the app directory
           git clone https://github.com/biswajitdasdev/react-app.git ~/app
 
+          cd ~/app
+
           yarn install
 
           yarn build
